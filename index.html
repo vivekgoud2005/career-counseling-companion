@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Career Counseling Companion – IBM Granite AI</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+<!-- ====================== HEADER ====================== -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="28" height="28" rx="7" fill="rgba(255,255,255,0.15)"/>
+        <path d="M7 20L12 13L16 17L20 10" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="20" cy="10" r="2.5" fill="white"/>
+      </svg>
+      Career Counseling Companion
+    </div>
+    <div class="header-badge">Powered by IBM Granite</div>
+  </div>
+</header>
+
+<!-- ====================== LOADING OVERLAY ====================== -->
+<div id="loading-overlay">
+  <div class="loading-card">
+    <div class="spinner"></div>
+    <h3>Analysing Your Profile</h3>
+    <p>Our four AI agents are collaborating to build your personalised career roadmap…</p>
+    <div class="agent-steps">
+      <div class="agent-step" id="step-academic">
+        <span class="dot"></span> Agent 1 · Academic Analysis
+      </div>
+      <div class="agent-step" id="step-aptitude">
+        <span class="dot"></span> Agent 2 · Interest &amp; Aptitude
+      </div>
+      <div class="agent-step" id="step-market">
+        <span class="dot"></span> Agent 3 · Labor Market RAG
+      </div>
+      <div class="agent-step" id="step-recommendation">
+        <span class="dot"></span> Agent 4 · Career Recommendations
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== MAIN ====================== -->
+<main>
+  <div class="two-col">
+
+    <!-- =================== LEFT: FORM =================== -->
+    <aside>
+      <form id="counseling-form" novalidate>
+
+        <!-- Step 1: Personal Info -->
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-header">
+            <span class="step-badge">1</span>
+            <h2>Personal &amp; Academic Details</h2>
+          </div>
+          <div class="card-body form-section">
+
+            <div class="form-group">
+              <label for="student-name">Full Name</label>
+              <input type="text" id="student-name" placeholder="e.g. Priya Sharma" required />
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div class="form-group">
+                <label for="grade-level">Grade / Year</label>
+                <select id="grade-level">
+                  <option value="10th Grade">10th Grade</option>
+                  <option value="11th Grade">11th Grade</option>
+                  <option value="12th Grade" selected>12th Grade</option>
+                  <option value="Undergraduate Year 1">UG Year 1</option>
+                  <option value="Undergraduate Year 2">UG Year 2</option>
+                  <option value="Undergraduate Year 3">UG Year 3</option>
+                  <option value="Postgraduate">Postgraduate</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="gpa">GPA / CGPA <span class="label-hint">(optional)</span></label>
+                <input type="text" id="gpa" placeholder="e.g. 8.5 / 10" />
+              </div>
+            </div>
+
+            <!-- Subjects -->
+            <div class="form-group">
+              <label>Subjects &amp; Marks</label>
+              <div style="display:grid;grid-template-columns:1fr 70px 70px 32px;gap:6px;margin-bottom:4px;">
+                <span class="col-label">Subject</span>
+                <span class="col-label" style="text-align:center">Marks</span>
+                <span class="col-label" style="text-align:center">Max</span>
+                <span></span>
+              </div>
+              <div class="subjects-grid" id="subjects-grid">
+                <!-- JS renders initial rows -->
+              </div>
+              <button type="button" class="btn-secondary" id="add-subject-btn" style="margin-top:8px;font-size:12px;padding:5px 12px;">
+                + Add Subject
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Step 2: Interests & Skills -->
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-header">
+            <span class="step-badge">2</span>
+            <h2>Interests, Skills &amp; Personality</h2>
+          </div>
+          <div class="card-body form-section">
+
+            <!-- Interests tag input -->
+            <div class="form-group">
+              <label>Areas of Interest <span class="label-hint">(press Enter to add)</span></label>
+              <input type="text" id="interests-input" placeholder="e.g. Artificial Intelligence" />
+              <div class="tag-list" id="interests-tags"></div>
+            </div>
+
+            <!-- Skills tag input -->
+            <div class="form-group">
+              <label>Current Skills <span class="label-hint">(press Enter to add)</span></label>
+              <input type="text" id="skills-input" placeholder="e.g. Python, Excel" />
+              <div class="tag-list" id="skills-tags"></div>
+            </div>
+
+            <!-- Personality traits -->
+            <div class="form-group">
+              <label>Personality Traits <span class="label-hint">(select all that apply)</span></label>
+              <div class="trait-grid" id="trait-grid">
+                <!-- JS renders checkboxes -->
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="hobbies">Hobbies &amp; Extracurriculars</label>
+              <textarea id="hobbies" rows="2" placeholder="e.g. Competitive programming, reading science fiction, robotics club"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="work-style">Preferred Work Style</label>
+              <select id="work-style">
+                <option value="">Select…</option>
+                <option value="Independent / Solo work">Independent / Solo work</option>
+                <option value="Collaborative / Team-based">Collaborative / Team-based</option>
+                <option value="Creative / Exploratory">Creative / Exploratory</option>
+                <option value="Structured / Process-driven">Structured / Process-driven</option>
+                <option value="Leadership / Management">Leadership / Management</option>
+                <option value="Mixed / Flexible">Mixed / Flexible</option>
+              </select>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Error -->
+        <div class="error-toast" id="error-msg"></div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn-primary" id="submit-btn">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          Analyse &amp; Get Career Recommendations
+        </button>
+
+      </form>
+    </aside>
+
+    <!-- =================== RIGHT: DASHBOARD =================== -->
+    <section id="dashboard">
+
+      <!-- Welcome placeholder -->
+      <div id="dashboard-placeholder" style="padding:60px 24px;text-align:center;color:var(--muted);">
+        <svg width="56" height="56" viewBox="0 0 56 56" fill="none" style="margin:0 auto 16px;display:block;">
+          <rect width="56" height="56" rx="14" fill="#dbeafe"/>
+          <path d="M14 40L23 26L30 33L38 20" stroke="#1d4ed8" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="38" cy="20" r="4" fill="#1d4ed8"/>
+        </svg>
+        <h3 style="font-size:1.1rem;color:var(--text);margin-bottom:8px;">Your Dashboard Awaits</h3>
+        <p style="font-size:13.5px;max-width:300px;margin:0 auto;">Fill in your academic details and interests, then click <strong>Analyse</strong> to see your personalised career roadmap.</p>
+      </div>
+
+      <!-- Results (hidden until API returns) -->
+      <div id="dashboard-results" style="display:none;">
+
+        <!-- Demo-mode notice (shown only when watsonx credentials are absent) -->
+        <div id="demo-banner" style="display:none;margin-bottom:18px;padding:12px 18px;background:#fefce8;border:1px solid #fde68a;border-radius:10px;font-size:13.5px;color:#78350f;">
+          <strong>Demo Mode</strong> — IBM watsonx.ai credentials are not configured.
+          Showing realistic sample recommendations generated by the local mock engine.
+          Add your <code>WATSONX_API_KEY</code> and <code>WATSONX_PROJECT_ID</code> to <code>.env</code> to enable live IBM Granite inference.
+        </div>
+
+        <!-- Intro banner -->
+        <div class="dash-intro" id="dash-intro"></div>
+
+        <!-- Career Pathways -->
+        <div class="dash-full card">
+          <div class="card-header">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+            <h2>Recommended Career Pathways</h2>
+          </div>
+          <div class="card-body">
+            <div class="career-cards" id="career-cards"></div>
+          </div>
+        </div>
+
+        <!-- Grid: skill gap + market trends -->
+        <div class="dash-grid" style="margin-top:22px">
+
+          <!-- Skill Gap Chart -->
+          <div class="card">
+            <div class="card-header">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 16l4-4 4 4M11 12V8"/></svg>
+              <h2>Skill Gap Analysis</h2>
+            </div>
+            <div class="card-body">
+              <p class="text-muted" style="margin-bottom:14px;">Skills you need to develop to reach your target career.</p>
+              <div class="chart-container">
+                <div class="chart-bars" id="skill-gap-chart"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Market Trends -->
+          <div class="card">
+            <div class="card-header">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              <h2>Labor Market Trends</h2>
+            </div>
+            <div class="card-body">
+              <p class="text-muted" style="margin-bottom:14px;font-size:12.5px;">
+                <span id="rag-badge" class="agent-tag">RAG-retrieved data</span>
+              </p>
+              <div class="trend-list" id="trend-list"></div>
+              <hr class="divider" />
+              <div class="section-title">In-Demand Skills Right Now</div>
+              <div class="skills-grid" id="market-skills"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Academic + Aptitude -->
+        <div class="dash-grid">
+
+          <!-- Academic Profile -->
+          <div class="card">
+            <div class="card-header">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              <h2>Academic Profile</h2>
+            </div>
+            <div class="card-body">
+              <div class="section-title">Strengths</div>
+              <div class="tag-list" id="academic-strengths"></div>
+              <div class="section-title mt-4">Areas for Improvement</div>
+              <div class="tag-list" id="academic-weaknesses"></div>
+              <hr class="divider" />
+              <div class="section-title">Subject Performance</div>
+              <div class="chart-bars" id="subject-chart"></div>
+            </div>
+          </div>
+
+          <!-- Aptitude Profile -->
+          <div class="card">
+            <div class="card-header">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              <h2>Aptitude &amp; Personality</h2>
+            </div>
+            <div class="card-body">
+              <div class="section-title">Interest Themes</div>
+              <div class="tag-list" id="interest-themes"></div>
+              <div class="section-title mt-4">Aptitude Areas</div>
+              <div class="tag-list" id="aptitude-areas"></div>
+              <hr class="divider" />
+              <div class="section-title">Personality Summary</div>
+              <div class="personality-block" id="personality-summary"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Next Steps -->
+        <div class="dash-full card" style="margin-top:0">
+          <div class="card-header">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <h2>Your Next Steps</h2>
+          </div>
+          <div class="card-body">
+            <div class="steps-list" id="next-steps"></div>
+          </div>
+        </div>
+
+        <!-- Career Summary -->
+        <div class="dash-full" style="margin-top:0;margin-bottom:22px;">
+          <div class="summary-block" id="career-summary"></div>
+        </div>
+
+        <!-- Agent metadata -->
+        <div style="margin-bottom:24px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);">
+          <div class="section-title">Analysis Metadata</div>
+          <div class="agent-tags">
+            <span class="agent-tag" id="meta-model">Model: –</span>
+            <span class="agent-tag" id="meta-rag">RAG: –</span>
+            <span class="agent-tag">Agent 1 · Academic Analysis</span>
+            <span class="agent-tag">Agent 2 · Interest &amp; Aptitude</span>
+            <span class="agent-tag">Agent 3 · Labor Market RAG</span>
+            <span class="agent-tag">Agent 4 · Career Recommendations</span>
+          </div>
+        </div>
+
+        <button type="button" class="btn-secondary" id="restart-btn" style="margin-bottom:12px;">
+          ← Start New Analysis
+        </button>
+
+      </div><!-- /dashboard-results -->
+    </section>
+
+  </div><!-- /two-col -->
+</main>
+
+<footer>
+  Career Counseling Companion &nbsp;·&nbsp; Powered by IBM Granite on watsonx.ai &nbsp;·&nbsp; Multi-Agent RAG Architecture
+</footer>
+
+<!-- ====================== JAVASCRIPT ====================== -->
+<script>
+  /* -------------------------------------------------------
+     Constants & State
+  ------------------------------------------------------- */
+  const TRAITS = [
+    "Analytical", "Creative", "Detail-oriented", "Empathetic",
+    "Leadership", "Introverted", "Extroverted", "Curious",
+    "Organised", "Adaptable", "Competitive", "Collaborative",
+  ];
+
+  const DEFAULT_SUBJECTS = [
+    { name: "Mathematics",   marks: 88, max: 100 },
+    { name: "Physics",       marks: 82, max: 100 },
+    { name: "Chemistry",     marks: 75, max: 100 },
+    { name: "English",       marks: 70, max: 100 },
+    { name: "Computer Sci.", marks: 92, max: 100 },
+  ];
+
+  let interestTags = ["Technology", "Data Science", "Problem Solving"];
+  let skillTags    = ["Python", "Mathematics", "Critical Thinking"];
+  let selectedTraits = new Set(["Analytical", "Curious", "Detail-oriented"]);
+
+  /* -------------------------------------------------------
+     Initialise Subject Grid
+  ------------------------------------------------------- */
+  function buildSubjectRow(subj = { name: "", marks: "", max: 100 }) {
+    const row = document.createElement("div");
+    row.className = "subject-row";
+    row.innerHTML = `
+      <input type="text"   class="subj-name"  placeholder="Subject name" value="${subj.name}" />
+      <input type="number" class="subj-marks" placeholder="0"  min="0"  max="1000" value="${subj.marks}" />
+      <input type="number" class="subj-max"   placeholder="100" min="1" max="1000" value="${subj.max}" />
+      <button type="button" class="btn-small remove-subj" title="Remove">✕</button>
+    `;
+    row.querySelector(".remove-subj").addEventListener("click", () => {
+      row.remove();
+    });
+    return row;
+  }
+
+  function initSubjectGrid() {
+    const grid = document.getElementById("subjects-grid");
+    DEFAULT_SUBJECTS.forEach(s => grid.appendChild(buildSubjectRow(s)));
+  }
+
+  document.getElementById("add-subject-btn").addEventListener("click", () => {
+    document.getElementById("subjects-grid").appendChild(buildSubjectRow());
+  });
+
+  /* -------------------------------------------------------
+     Trait Checkboxes
+  ------------------------------------------------------- */
+  function initTraits() {
+    const grid = document.getElementById("trait-grid");
+    TRAITS.forEach(trait => {
+      const label = document.createElement("label");
+      label.className = "trait-chip" + (selectedTraits.has(trait) ? " checked" : "");
+      label.innerHTML = `<input type="checkbox" value="${trait}" ${selectedTraits.has(trait) ? "checked" : ""} /> ${trait}`;
+      label.querySelector("input").addEventListener("change", (e) => {
+        if (e.target.checked) {
+          selectedTraits.add(trait);
+          label.classList.add("checked");
+        } else {
+          selectedTraits.delete(trait);
+          label.classList.remove("checked");
+        }
+      });
+      grid.appendChild(label);
+    });
+  }
+
+  /* -------------------------------------------------------
+     Tag Inputs
+  ------------------------------------------------------- */
+  function renderTags(listId, tags) {
+    const list = document.getElementById(listId);
+    list.innerHTML = "";
+    tags.forEach((tag, i) => {
+      const span = document.createElement("span");
+      span.className = "tag";
+      span.innerHTML = `${tag} <button class="remove" title="Remove">&times;</button>`;
+      span.querySelector(".remove").addEventListener("click", () => {
+        tags.splice(i, 1);
+        renderTags(listId, tags);
+      });
+      list.appendChild(span);
+    });
+  }
+
+  function initTagInput(inputId, listId, tags) {
+    const input = document.getElementById(inputId);
+    input.addEventListener("keydown", (e) => {
+      if ((e.key === "Enter" || e.key === ",") && input.value.trim()) {
+        e.preventDefault();
+        const val = input.value.trim().replace(/,$/, "");
+        if (val && !tags.includes(val)) {
+          tags.push(val);
+          renderTags(listId, tags);
+        }
+        input.value = "";
+      }
+    });
+    renderTags(listId, tags);
+  }
+
+  /* -------------------------------------------------------
+     Loading Overlay Stepper
+  ------------------------------------------------------- */
+  const STEPS = ["step-academic", "step-aptitude", "step-market", "step-recommendation"];
+  let stepTimer = null;
+
+  function startStepper() {
+    let current = 0;
+    STEPS.forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.remove("active", "done");
+    });
+    document.getElementById(STEPS[0]).classList.add("active");
+
+    stepTimer = setInterval(() => {
+      if (current < STEPS.length - 1) {
+        document.getElementById(STEPS[current]).classList.replace("active", "done");
+        current++;
+        document.getElementById(STEPS[current]).classList.add("active");
+      }
+    }, 2200);
+  }
+
+  function stopStepper() {
+    clearInterval(stepTimer);
+    STEPS.forEach(id => {
+      document.getElementById(id).classList.remove("active");
+      document.getElementById(id).classList.add("done");
+    });
+  }
+
+  function showLoading() {
+    document.getElementById("loading-overlay").classList.add("active");
+    startStepper();
+  }
+
+  function hideLoading() {
+    stopStepper();
+    document.getElementById("loading-overlay").classList.remove("active");
+  }
+
+  /* -------------------------------------------------------
+     Helpers
+  ------------------------------------------------------- */
+  function makeTag(text, style = "") {
+    return `<span class="tag" style="${style}">${text}</span>`;
+  }
+
+  function makeSkillChip(text) {
+    return `<span class="skill-chip">${text}</span>`;
+  }
+
+  function animateBarWidth(el, pct, delay = 100) {
+    el.style.width = "0%";
+    setTimeout(() => { el.style.width = pct + "%"; }, delay);
+  }
+
+  /* -------------------------------------------------------
+     Dashboard Rendering
+  ------------------------------------------------------- */
+  function renderDashboard(data) {
+    const { student_name, academic, aptitude, market, recommendation, model_used, rag_enabled } = data;
+
+    /* Intro banner */
+    document.getElementById("dash-intro").innerHTML = `
+      <h2>🎓 ${student_name}'s Career Roadmap</h2>
+      <p>${academic.overall_profile}</p>
+      <div class="dash-meta">
+        <div class="dash-meta-item">
+          <strong>Top Career Match</strong>
+          ${recommendation.careers[0]?.title || "Data Scientist"}
+        </div>
+        <div class="dash-meta-item">
+          <strong>Match Score</strong>
+          ${recommendation.careers[0]?.score || 92}%
+        </div>
+        <div class="dash-meta-item">
+          <strong>Pathways Found</strong>
+          ${recommendation.careers.length}
+        </div>
+        <div class="dash-meta-item">
+          <strong>Skill Gaps</strong>
+          ${recommendation.skill_gaps.length} identified
+        </div>
+      </div>
+    `;
+
+    /* Career pathway cards */
+    const cardsEl = document.getElementById("career-cards");
+    cardsEl.innerHTML = "";
+    recommendation.careers.forEach((c, idx) => {
+      const rank = c.rank || idx + 1;
+      const score = c.score || (90 - idx * 6);
+      const skillsHtml = (c.skills_needed || []).map(makeSkillChip).join("");
+      cardsEl.innerHTML += `
+        <div class="career-card rank-${rank}">
+          <div class="career-card-top">
+            <div class="career-card-title">${c.title || "Career Path " + rank}</div>
+            <span class="rank-badge">#${rank} Match</span>
+          </div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-bar-fill" id="score-bar-${rank}" style="width:0%"></div></div>
+            <span class="score-text">${score}%</span>
+          </div>
+          <div class="career-fit">${c.fit_reason || ""}</div>
+          <div class="skills-needed">${skillsHtml}</div>
+          ${c.next_step ? `<div class="career-next-step">▶ ${c.next_step}</div>` : ""}
+        </div>
+      `;
+    });
+
+    /* Animate score bars */
+    setTimeout(() => {
+      recommendation.careers.forEach((c, idx) => {
+        const el = document.getElementById("score-bar-" + (c.rank || idx + 1));
+        if (el) el.style.width = (c.score || 80) + "%";
+      });
+    }, 200);
+
+    /* Skill gap chart */
+    const gapChart = document.getElementById("skill-gap-chart");
+    gapChart.innerHTML = "";
+    const gapSkills = recommendation.skill_gaps.slice(0, 6);
+    const gapPcts = [85, 72, 65, 58, 45, 35];
+    gapSkills.forEach((skill, i) => {
+      const pct = gapPcts[i] || 40;
+      const row = document.createElement("div");
+      row.className = "chart-bar-row";
+      row.innerHTML = `
+        <span class="chart-bar-label">${skill}</span>
+        <div class="chart-bar-outer">
+          <div class="chart-bar-inner" id="gap-bar-${i}" style="width:0%">${pct}%</div>
+        </div>
+        <span class="chart-bar-pct">${pct}%</span>
+      `;
+      gapChart.appendChild(row);
+    });
+    setTimeout(() => {
+      gapSkills.forEach((_, i) => {
+        const el = document.getElementById("gap-bar-" + i);
+        if (el) el.style.width = (gapPcts[i] || 40) + "%";
+      });
+    }, 300);
+
+    /* Market trends */
+    const trendList = document.getElementById("trend-list");
+    trendList.innerHTML = (market.top_trends || []).map(t =>
+      `<div class="trend-item"><span class="trend-dot"></span>${t}</div>`
+    ).join("");
+
+    document.getElementById("market-skills").innerHTML =
+      (market.in_demand_skills || []).map(makeSkillChip).join("");
+
+    /* Academic tags */
+    document.getElementById("academic-strengths").innerHTML =
+      (academic.strengths || []).map(s => makeTag(s)).join("");
+    document.getElementById("academic-weaknesses").innerHTML =
+      (academic.weaknesses || []).map(w => makeTag(w,
+        "background:#fef3c7;color:#92400e;border-color:#fde68a;"
+      )).join("");
+
+    /* Subject performance mini-chart */
+    const subjChart = document.getElementById("subject-chart");
+    subjChart.innerHTML = "";
+    Object.entries(academic.subject_scores || {}).forEach(([name, pct], i) => {
+      const row = document.createElement("div");
+      row.className = "chart-bar-row";
+      const color = pct >= 80 ? "var(--success)" : pct >= 60 ? "var(--accent)" : "var(--warn)";
+      row.innerHTML = `
+        <span class="chart-bar-label">${name}</span>
+        <div class="chart-bar-outer">
+          <div class="chart-bar-inner" id="subj-bar-${i}" style="width:0%;background:${color}">${pct}%</div>
+        </div>
+        <span class="chart-bar-pct">${pct}%</span>
+      `;
+      subjChart.appendChild(row);
+    });
+    setTimeout(() => {
+      Object.entries(academic.subject_scores || {}).forEach(([_, pct], i) => {
+        const el = document.getElementById("subj-bar-" + i);
+        if (el) el.style.width = pct + "%";
+      });
+    }, 400);
+
+    /* Aptitude */
+    document.getElementById("interest-themes").innerHTML =
+      (aptitude.interpreted_interests || []).map(t => makeTag(t,
+        "background:#f3e8ff;color:#6b21a8;border-color:#e9d5ff;"
+      )).join("");
+    document.getElementById("aptitude-areas").innerHTML =
+      (aptitude.aptitude_areas || []).map(a => makeTag(a,
+        "background:#dcfce7;color:#14532d;border-color:#bbf7d0;"
+      )).join("");
+    document.getElementById("personality-summary").textContent =
+      aptitude.personality_summary || "";
+
+    /* Next steps */
+    const stepsEl = document.getElementById("next-steps");
+    stepsEl.innerHTML = (recommendation.next_steps || []).map((step, i) =>
+      `<div class="step-item">
+        <div class="step-num">${i + 1}</div>
+        <div class="step-text">${step}</div>
+      </div>`
+    ).join("");
+
+    /* Summary */
+    document.getElementById("career-summary").textContent =
+      recommendation.summary || "";
+
+    /* Demo mode banner */
+    const demoBanner = document.getElementById("demo-banner");
+    if (data.demo_mode) {
+      demoBanner.style.display = "block";
+    } else {
+      demoBanner.style.display = "none";
+    }
+
+    /* Meta */
+    document.getElementById("meta-model").textContent =
+      "Model: " + (data.demo_mode ? "local mock (demo)" : model_used || "ibm-granite");
+    document.getElementById("meta-rag").textContent   = "RAG: " + (rag_enabled ? "FAISS enabled" : "disabled");
+    document.getElementById("rag-badge").textContent  = rag_enabled ? "RAG · FAISS-retrieved data" : "demo data";
+
+    /* Show dashboard */
+    document.getElementById("dashboard-placeholder").style.display = "none";
+    document.getElementById("dashboard-results").style.display = "block";
+    document.getElementById("dashboard").classList.add("visible");
+
+    /* Scroll to dashboard on mobile */
+    if (window.innerWidth < 900) {
+      document.getElementById("dashboard").scrollIntoView({ behavior: "smooth" });
+    }
+  }
+
+  /* -------------------------------------------------------
+     Form Submission
+  ------------------------------------------------------- */
+  document.getElementById("counseling-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    /* Gather subjects */
+    const rows = document.querySelectorAll(".subject-row");
+    const subjects = [];
+    rows.forEach(row => {
+      const name  = row.querySelector(".subj-name").value.trim();
+      const marks = parseFloat(row.querySelector(".subj-marks").value);
+      const max   = parseFloat(row.querySelector(".subj-max").value) || 100;
+      if (name && !isNaN(marks)) subjects.push({ name, marks, max_marks: max });
+    });
+
+    if (subjects.length === 0) {
+      showError("Please add at least one subject with marks.");
+      return;
+    }
+    if (!document.getElementById("student-name").value.trim()) {
+      showError("Please enter your name.");
+      return;
+    }
+
+    clearError();
+
+    const payload = {
+      student_name:      document.getElementById("student-name").value.trim(),
+      grade_level:       document.getElementById("grade-level").value,
+      gpa:               document.getElementById("gpa").value.trim(),
+      subjects:          subjects,
+      interests:         [...interestTags],
+      skills:            [...skillTags],
+      personality_traits: [...selectedTraits],
+      hobbies:           document.getElementById("hobbies").value.trim(),
+      work_style:        document.getElementById("work-style").value,
+    };
+
+    const btn = document.getElementById("submit-btn");
+    btn.disabled = true;
+    showLoading();
+
+    try {
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      hideLoading();
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: "Server error" }));
+        showError(err.error || `Server returned ${res.status}`);
+        return;
+      }
+
+      const data = await res.json();
+      renderDashboard(data);
+
+    } catch (err) {
+      hideLoading();
+      showError("Network error: " + err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  /* -------------------------------------------------------
+     Restart
+  ------------------------------------------------------- */
+  document.getElementById("restart-btn").addEventListener("click", () => {
+    document.getElementById("dashboard-results").style.display = "none";
+    document.getElementById("dashboard-placeholder").style.display = "block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  /* -------------------------------------------------------
+     Error helpers
+  ------------------------------------------------------- */
+  function showError(msg) {
+    const el = document.getElementById("error-msg");
+    el.textContent = "⚠ " + msg;
+    el.classList.add("visible");
+  }
+  function clearError() {
+    document.getElementById("error-msg").classList.remove("visible");
+  }
+
+  /* -------------------------------------------------------
+     Boot
+  ------------------------------------------------------- */
+  initSubjectGrid();
+  initTraits();
+  initTagInput("interests-input", "interests-tags", interestTags);
+  initTagInput("skills-input",    "skills-tags",    skillTags);
+</script>
+
+</body>
+</html>
